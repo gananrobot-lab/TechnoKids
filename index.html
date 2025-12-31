@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Techno Kids Platform</title>
+
+<style>
+:root {
+  --bg1:#667eea;
+  --bg2:#764ba2;
+  --card:#ffffff22;
+}
+
+body.light {
+  --bg1:#f7f7f7;
+  --bg2:#e0e0ff;
+  --card:#00000011;
+  color:black;
+}
+
+body {
+  margin:0;
+  font-family: Comic Sans MS, Arial;
+  background: linear-gradient(135deg,var(--bg1),var(--bg2));
+  text-align:center;
+  color:white;
+}
+
+nav {
+  background:#000000aa;
+  padding:15px;
+}
+
+nav button {
+  margin:5px;
+  padding:10px 20px;
+  font-size:16px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+}
+
+section {
+  display:none;
+  padding:40px;
+}
+
+section.active {
+  display:block;
+}
+
+.card {
+  background:var(--card);
+  padding:20px;
+  margin:15px auto;
+  border-radius:15px;
+  width:320px;
+}
+
+input, select {
+  padding:10px;
+  width:80%;
+  margin:8px;
+  border-radius:8px;
+  border:none;
+}
+
+button.action {
+  background:orange;
+  font-size:18px;
+}
+
+#chat {
+  height:200px;
+  overflow-y:auto;
+  background:#00000044;
+  padding:10px;
+  border-radius:10px;
+}
+
+canvas {
+  background:#111;
+  border-radius:10px;
+  margin-top:10px;
+}
+</style>
+
+<script>
+/* NAV */
+function show(page){
+  document.querySelectorAll("section").forEach(
+    s => s.classList.remove("active")
+  );
+  document.getElementById(page).classList.add("active");
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+/* CLICK GAME */
+let score=0;
+function clickGame(){
+  let diff=document.getElementById("difficulty").value;
+  score += diff==="hard" ? 3 : 1;
+  document.getElementById("score").innerText=score;
+}
+
+/* CANVAS GAME */
+let canvas, ctx, x=50, y=50, boxScore=0;
+
+function startCanvasGame(){
+  canvas=document.getElementById("game");
+  ctx=canvas.getContext("2d");
+
+  canvas.onclick=function(e){
+    let r=canvas.getBoundingClientRect();
+    let mx=e.clientX-r.left;
+    let my=e.clientY-r.top;
+    if(mx>x && mx<x+40 && my>y && my<y+40){
+      boxScore++;
+      document.getElementById("boxScore").innerText=boxScore;
+      x=Math.random()*260;
+      y=Math.random()*260;
+    }
+  };
+
+  function draw(){
+    ctx.clearRect(0,0,300,300);
+    ctx.fillStyle="orange";
+    ctx.fillRect(x,y,40,40);
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* CHATBOT */
+function sendMsg(){
+  let input=document.getElementById("msg");
+  let chat=document.getElementById("chat");
+  let mode=document.getElementById("mode").value;
+  let text=input.value.toLowerCase();
+  if(!text) return;
+
+  chat.innerHTML+=`<p>👦 You: ${input.value}</p>`;
+  let reply="🤖 I'm learning!";
+
+  if(mode==="kids"){
+    if(text.includes("python")) reply="🐍 Python is easy and fun!";
+    else if(text.includes("game")) reply="🎮 Games are made with code!";
+    else if(text.includes("ai")) reply="🤖 AI means smart computers!";
+    else reply="😊 Ask me about coding!";
+  }
+
+  if(mode==="tech"){
+    if(text.includes("python")) reply="🐍 Python is a high-level interpreted language.";
+    else if(text.includes("html")) reply="🌐 HTML structures web pages.";
+    else reply="💡 Ask a technical question.";
+  }
+
+  chat.innerHTML+=`<p>${reply}</p>`;
+  chat.scrollTop=chat.scrollHeight;
+  input.value="";
+}
+
+/* LOGIN */
+function login(){
+  let user=document.getElementById("user").value;
+  if(user===""){
+    alert("Enter username!");
+  } else {
+    alert("Welcome "+user+" 🎉 (Demo Login)");
+  }
+}
+
+window.onload=startCanvasGame;
+</script>
+</head>
+
+<body>
+
+<nav>
+  <button onclick="show('home')">🏠 Home</button>
+  <button onclick="show('learn')">📚 Learn</button>
+  <button onclick="show('games')">🎮 Games</button>
+  <button onclick="show('chatbot')">🤖 Chat</button>
+  <button onclick="show('login')">🔐 Login</button>
+  <button onclick="toggleTheme()">🎨 Theme</button>
+</nav>
+
+<section id="home" class="active">
+  <h1>🚀 Techno Kids Platform</h1>
+  <p>Learn • Play • Code • Innovate</p>
+  <div class="card">🐍 Coding for Kids</div>
+  <div class="card">🤖 AI Basics</div>
+  <div class="card">🎮 Fun Games</div>
+</section>
+
+<section id="learn">
+  <h1>📚 Learn Coding</h1>
+  <div class="card">Python Basics</div>
+  <div class="card">HTML & CSS</div>
+  <div class="card">AI Concepts</div>
+</section>
+
+<section id="games">
+  <h1>🎮 Click Game</h1>
+  <select id="difficulty">
+    <option value="easy">Easy</option>
+    <option value="hard">Hard</option>
+  </select><br><br>
+  <button class="action" onclick="clickGame()">CLICK ME</button>
+  <h2>Score: <span id="score">0</span></h2>
+
+  <hr style="width:60%;margin:30px auto;">
+
+  <h1>🟧 Catch the Box</h1>
+  <canvas id="game" width="300" height="300"></canvas>
+  <h2>Box Score: <span id="boxScore">0</span></h2>
+</section>
+
+<section id="chatbot">
+  <h1>🤖 AI Chatbot</h1>
+  <select id="mode">
+    <option value="kids">Kids Mode</option>
+    <option value="tech">Tech Mode</option>
+  </select>
+  <div id="chat"></div>
+  <input id="msg" placeholder="Ask about Python, AI, games...">
+  <br>
+  <button class="action" onclick="sendMsg()">Send</button>
+</section>
+
+<section id="login">
+  <h1>🔐 Login</h1>
+  <input id="user" placeholder="Username"><br>
+  <input type="password" placeholder="Password"><br>
+  <button class="action" onclick="login()">Login</button>
+</section>
+
+</body>
+</html>
